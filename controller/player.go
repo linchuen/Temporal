@@ -4,9 +4,16 @@ type GuessNumberAPI struct {
 }
 
 type GuessRequest struct {
+	GuessNumber int
+	BetAmount   int
 }
 
 type GuessResponse struct {
+	OrderNo     string
+	Odds        int
+	Status      string
+	Round       int
+	CreatedTime string
 }
 
 func NewGuessNumberAPI() *GuessNumberAPI {
