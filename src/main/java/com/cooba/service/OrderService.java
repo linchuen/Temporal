@@ -48,29 +48,33 @@ public class OrderService {
         System.out.println("SettleOrder: orders=" + orders);
 
         for (Order order : orders) {
-            if (order.getStatus() != Status.PENDING) {
-                continue;
-            }
-
-            order.setResultNumber(resultNumber);
-            order.setUpdatedTime(LocalDateTime.now());
-
-            if (order.getGuessNumber() == resultNumber) {
-                order.setOdds(10);
-                order.setWinAmount(order.getBetAmount() * 10);
-                order.setStatus(Status.SETTLE);
-                order.setResult("WIN");
-            } else {
-                order.setOdds(0);
-                order.setWinAmount(0);
-                order.setStatus(Status.SETTLE);
-                order.setResult("LOSE");
-            }
-
-            orderMapper.updateById(order);
+            settleOrder(order, resultNumber);
         }
 
         return orders;
+    }
+
+    public void settleOrder(Order order, int resultNumber) {
+        if (order.getStatus() != Status.PENDING) {
+            return;
+        }
+
+        order.setResultNumber(resultNumber);
+        order.setUpdatedTime(LocalDateTime.now());
+
+        if (order.getGuessNumber() == resultNumber) {
+            order.setOdds(10);
+            order.setWinAmount(order.getBetAmount() * 10);
+            order.setStatus(Status.SETTLE);
+            order.setResult("WIN");
+        } else {
+            order.setOdds(0);
+            order.setWinAmount(0);
+            order.setStatus(Status.SETTLE);
+            order.setResult("LOSE");
+        }
+
+        orderMapper.updateById(order);
     }
 
     public int getRound() {
