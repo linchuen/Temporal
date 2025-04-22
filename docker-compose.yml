@@ -1,0 +1,34 @@
+version: '3.7'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: temporal_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: temporal
+      MYSQL_DATABASE: temporal
+    ports:
+      - "3306:3306"
+
+  temporal:
+    image: temporalio/auto-setup:1.27.2.0
+    container_name: temporal
+    environment:
+      DB: mysql8
+      MYSQL_SEEDS: mysql
+      MYSQL_USER: root
+      MYSQL_PWD: temporal
+    ports:
+      - "7233:7233"
+    depends_on:
+      - mysql
+
+  temporal-ui:
+    image: temporalio/ui:2.15.0
+    container_name: temporal_ui
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+    ports:
+      - "8080:8080"
+    depends_on:
+      - temporal
