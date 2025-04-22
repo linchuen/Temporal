@@ -1,6 +1,5 @@
 package com.cooba.workflow;
 
-import com.cooba.entity.Order;
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
 
@@ -9,17 +8,25 @@ public interface GuessNumberActivity {
 
     // ① 產生訂單
     @ActivityMethod
-    Order generateOrderActivity(int guessNumber, int betAmount);
+    void generateOrderActivity(String orderId);
 
     // ② 扣款
     @ActivityMethod
-    void subtractBalanceActivity(Order order);
+    void subtractBalanceActivity(String orderId);
 
-    // ③ 結算
+    // ③ 更新訂單狀態為 PENDING
     @ActivityMethod
-    void settleOrderActivity(Order order);
+    void updateOrderStatusActivity(String orderId);
 
-    // ④ 發獎金
+    // ④ 結算
     @ActivityMethod
-    void addBalanceActivity(Order order);
+    void settleOrderActivity(String orderId);
+
+    // ⑤ 發獎金
+    @ActivityMethod
+    void addBalanceActivity(String orderId);
+
+    // ⑥ 結束訂單狀態
+    @ActivityMethod
+    void finalizeOrderActivity(String orderId);
 }
