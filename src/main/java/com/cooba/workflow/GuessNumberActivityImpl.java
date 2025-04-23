@@ -1,13 +1,14 @@
 package com.cooba.workflow;
 
 import com.cooba.constant.Status;
-import com.cooba.dto.GuessRequest;
 import com.cooba.entity.Order;
 import com.cooba.service.OrderService;
 import com.cooba.service.WalletService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class GuessNumberActivityImpl implements GuessNumberActivity {
@@ -15,37 +16,33 @@ public class GuessNumberActivityImpl implements GuessNumberActivity {
     private final WalletService walletService;
 
     @Override
-    public Order generateOrderActivity(GuessRequest request) {
-        return orderService.generateOrder(request.getGuessNumber(), request.getBetAmount());
-    }
+    public void subtractBalanceActivity(String orderNo, int betAmount) {
+        Order order = orderService.findOrder(orderNo);
+        if (order.getStatus() == Status.FAILED || order.getStatus() == Status.PENDING) return;
 
-    @Override
-    public void subtractBalanceActivity(Order order) {
-        if (order.getStatus() != Status.INIT ){
+        if (order.getStatus() != Status.INIT) {
+            log.warn("{} status is not init", order);
             throw new RuntimeException("Status Error");
         }
 
         try {
-            walletService.subtract(order.getBetAmount());
+            walletService.subtract(betAmount);
         } catch (Exception e) {
-            orderService.updateOrderStatus(order.getOrderNo(), Status.FAILED);
-            order.setStatus(Status.FAILED);
+            if (e.getMessage().equals("insufficient balance")) {
+                orderService.updateOrderStatus(orderNo, Status.FAILED);
+            }
+            throw new RuntimeException(e);
         }
-        orderService.updateOrderStatus(order.getOrderNo(), Status.PENDING);
-        order.setStatus(Status.PENDING);
+        orderService.updateOrderStatus(orderNo, Status.PENDING);
     }
 
     @Override
-    public void updateOrderFailedActivity(Order order) {
-        if (order.getStatus() == Status.PENDING) return;
+    public void settleOrderActivity(String orderNo, int resultNumber) {
+        Order order = orderService.findOrder(orderNo);
+        if (order.getStatus() == Status.SETTLE) return;
 
-        orderService.updateOrderStatus(order.getOrderNo(), Status.FAILED);
-        order.setStatus(Status.FAILED);
-    }
-
-    @Override
-    public void settleOrderActivity(Order order, int resultNumber) {
-        if (order.getStatus() != Status.PENDING ){
+        if (order.getStatus() != Status.PENDING) {
+            log.warn("{} status is not pending", order);
             throw new RuntimeException("Status Error");
         }
 
@@ -53,11 +50,15 @@ public class GuessNumberActivityImpl implements GuessNumberActivity {
     }
 
     @Override
-    public void addBalanceActivity(Order order) {
-        if (order.getStatus() != Status.SETTLE ){
+    public void addBalanceActivity(String orderNo) {
+        Order order = orderService.findOrder(orderNo);
+        if (order.getStatus() == Status.AWARD) return;
+
+        if (order.getStatus() != Status.SETTLE) {
+            log.warn("{} status is not settle", order);
             throw new RuntimeException("Status Error");
         }
-        if(order.getWinAmount() > 0) {
+        if (order.getWinAmount() > 0) {
             walletService.add(order.getWinAmount());
         }
         orderService.updateOrderStatus(order.getOrderNo(), Status.AWARD);
@@ -65,8 +66,12 @@ public class GuessNumberActivityImpl implements GuessNumberActivity {
     }
 
     @Override
-    public void finalizeOrderActivity(Order order) {
-        if (order.getStatus() != Status.AWARD ){
+    public void finalizeOrderActivity(String orderNo) {
+        Order order = orderService.findOrder(orderNo);
+        if (order.getStatus() == Status.DONE) return;
+
+        if (order.getStatus() != Status.AWARD) {
+            log.warn("{} status is not award", order);
             throw new RuntimeException("Status Error");
         }
         orderService.updateOrderStatus(order.getOrderNo(), Status.DONE);

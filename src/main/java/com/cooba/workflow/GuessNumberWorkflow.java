@@ -1,6 +1,5 @@
 package com.cooba.workflow;
 
-import com.cooba.dto.GuessRequest;
 import com.cooba.entity.Order;
 import io.temporal.workflow.QueryMethod;
 import io.temporal.workflow.SignalMethod;
@@ -11,7 +10,7 @@ import io.temporal.workflow.WorkflowMethod;
 public interface GuessNumberWorkflow {
 
     @WorkflowMethod
-    Order guessNumber(GuessRequest request);
+    void guessNumber(Order order);
 
     @SignalMethod
     void drawNumber(int resultNumber);

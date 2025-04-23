@@ -54,6 +54,10 @@ public class OrderService {
         return orders;
     }
 
+    public Order findOrder(String orderNo) {
+        return orderMapper.getOrderByOrderNo(orderNo);
+    }
+
     public void settleOrder(Order order, int resultNumber) {
         if (order.getStatus() != Status.PENDING) {
             return;
@@ -78,7 +82,7 @@ public class OrderService {
     }
 
     public int getRound() {
-        Integer currentRound =  roundMapper.getLatestRound();
+        Integer currentRound = roundMapper.getLatestRound();
         return currentRound == null ? 0 : currentRound;
     }
 

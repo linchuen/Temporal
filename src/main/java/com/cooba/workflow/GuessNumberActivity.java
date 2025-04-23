@@ -1,34 +1,24 @@
 package com.cooba.workflow;
 
-import com.cooba.dto.GuessRequest;
-import com.cooba.entity.Order;
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
 
 @ActivityInterface
 public interface GuessNumberActivity {
 
-    // ① 產生訂單
+    // ① 扣款
     @ActivityMethod
-    Order generateOrderActivity(GuessRequest request);
+    void subtractBalanceActivity(String orderNo, int betAmount);
 
-    // ② 扣款
+    // ② 結算
     @ActivityMethod
-    void subtractBalanceActivity(Order order);
+    void settleOrderActivity(String orderNo, int resultNumber);
 
-    // ③ 更新訂單狀態為FAILED
+    // ③ 發獎金
     @ActivityMethod
-    void updateOrderFailedActivity(Order order);
+    void addBalanceActivity(String orderNo);
 
-    // ④ 結算
+    // ④ 結束訂單狀態
     @ActivityMethod
-    void settleOrderActivity(Order order, int resultNumber);
-
-    // ⑤ 發獎金
-    @ActivityMethod
-    void addBalanceActivity(Order order);
-
-    // ⑥ 結束訂單狀態
-    @ActivityMethod
-    void finalizeOrderActivity(Order order);
+    void finalizeOrderActivity(String orderNo);
 }

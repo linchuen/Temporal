@@ -1,15 +1,15 @@
 package com.cooba.workflow;
 
-import com.cooba.dto.GuessRequest;
 import com.cooba.entity.Order;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.workflow.Workflow;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
 
+@Slf4j
 public class GuessNumberWorkflowImpl implements GuessNumberWorkflow {
-    private GuessRequest request;
-
+    private Integer resultNumber;
     private final GuessNumberActivity activities = Workflow.newActivityStub(
             GuessNumberActivity.class,
             ActivityOptions.newBuilder()
@@ -18,24 +18,23 @@ public class GuessNumberWorkflowImpl implements GuessNumberWorkflow {
     );
 
     @Override
-    public Order guessNumber(GuessRequest request) {
-        Order order = activities.generateOrderActivity(request);
+    public void guessNumber(Order order) {
+        String orderNo = order.getOrderNo();
+        int betAmount = order.getBetAmount();
+        activities.subtractBalanceActivity(orderNo, betAmount);
 
-        activities.subtractBalanceActivity(order);
+        Workflow.await(() -> this.resultNumber != null); // 等待 signal
 
-        activities.updateOrderFailedActivity(order);
+        activities.settleOrderActivity(orderNo, this.resultNumber);
 
-        activities.settleOrderActivity(order, 11);
+        activities.addBalanceActivity(orderNo);
 
-        activities.addBalanceActivity(order);
-
-        activities.finalizeOrderActivity(order);
-        return order;
+        activities.finalizeOrderActivity(orderNo);
     }
 
     @Override
     public void drawNumber(int resultNumber) {
-
+        this.resultNumber = resultNumber;
     }
 
     @Override
