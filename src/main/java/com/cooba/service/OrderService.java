@@ -18,7 +18,7 @@ public class OrderService {
 
 
     public Order generateOrder(int guessNumber, int betAmount) {
-        int currentRound = roundMapper.getLatestRound();
+        int currentRound = getRound();
 
         String orderNo = String.format("ORD-%d-%d", currentRound, System.nanoTime());
 
@@ -78,7 +78,8 @@ public class OrderService {
     }
 
     public int getRound() {
-        return roundMapper.getLatestRound();
+        Integer currentRound =  roundMapper.getLatestRound();
+        return currentRound == null ? 0 : currentRound;
     }
 
     public void generateNextRound() {
