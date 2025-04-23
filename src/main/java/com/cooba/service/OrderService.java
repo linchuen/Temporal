@@ -58,6 +58,10 @@ public class OrderService {
         return orderMapper.getOrderByOrderNo(orderNo);
     }
 
+    public List<Order> findOrders(int round) {
+        return orderMapper.getOrdersByRound(round);
+    }
+
     public void settleOrder(Order order, int resultNumber) {
         if (order.getStatus() != Status.PENDING) {
             return;

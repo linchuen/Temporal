@@ -16,9 +16,10 @@ public class GuessNumberActivityImpl implements GuessNumberActivity {
     private final WalletService walletService;
 
     @Override
-    public void subtractBalanceActivity(String orderNo, int betAmount) {
+    public boolean subtractBalanceActivity(String orderNo, int betAmount) {
         Order order = orderService.findOrder(orderNo);
-        if (order.getStatus() == Status.FAILED || order.getStatus() == Status.PENDING) return;
+        if (order.getStatus() == Status.FAILED) return false;
+        if (order.getStatus() == Status.PENDING) return true;
 
         if (order.getStatus() != Status.INIT) {
             log.warn("{} status is not init", order);
@@ -30,10 +31,12 @@ public class GuessNumberActivityImpl implements GuessNumberActivity {
         } catch (Exception e) {
             if (e.getMessage().equals("insufficient balance")) {
                 orderService.updateOrderStatus(orderNo, Status.FAILED);
+                return false;
             }
             throw new RuntimeException(e);
         }
         orderService.updateOrderStatus(orderNo, Status.PENDING);
+        return true;
     }
 
     @Override

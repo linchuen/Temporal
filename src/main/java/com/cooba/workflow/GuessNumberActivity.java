@@ -8,7 +8,7 @@ public interface GuessNumberActivity {
 
     // ① 扣款
     @ActivityMethod
-    void subtractBalanceActivity(String orderNo, int betAmount);
+    boolean subtractBalanceActivity(String orderNo, int betAmount);
 
     // ② 結算
     @ActivityMethod

@@ -21,7 +21,8 @@ public class GuessNumberWorkflowImpl implements GuessNumberWorkflow {
     public void guessNumber(Order order) {
         String orderNo = order.getOrderNo();
         int betAmount = order.getBetAmount();
-        activities.subtractBalanceActivity(orderNo, betAmount);
+        boolean isSuccess = activities.subtractBalanceActivity(orderNo, betAmount);
+        if (!isSuccess) return;
 
         Workflow.await(() -> this.resultNumber != null); // 等待 signal
 
