@@ -76,7 +76,7 @@ public class OrderService {
             order.setStatus(Status.SETTLE);
             order.setResult("WIN");
         } else {
-            order.setOdds(0);
+            order.setOdds(10);
             order.setWinAmount(0);
             order.setStatus(Status.SETTLE);
             order.setResult("LOSE");

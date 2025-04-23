@@ -37,9 +37,4 @@ public class GuessNumberWorkflowImpl implements GuessNumberWorkflow {
     public void drawNumber(int resultNumber) {
         this.resultNumber = resultNumber;
     }
-
-    @Override
-    public boolean isOrderCompleted() {
-        return false;
-    }
 }
