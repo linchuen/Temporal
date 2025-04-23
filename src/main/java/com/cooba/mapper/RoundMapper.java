@@ -12,6 +12,6 @@ public interface RoundMapper extends BaseMapper<Round> {
     @Select("SELECT round FROM rounds ORDER BY round DESC LIMIT 1")
     Integer getLatestRound();
 
-    @Insert("INSERT INTO rounds (round) SELECT IFNULL(MAX(round), 0) + 1 FROM rounds")
-    void generateNextRound();
+    @Insert("INSERT INTO rounds (round) VALUES #{round}")
+    void generateRound(Integer round);
 }

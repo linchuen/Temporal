@@ -54,6 +54,7 @@ public class GuessFlowController {
             workflow.drawNumber(resultNumber);
         }
 
+        orderService.generateNextRound();
         String orderNos = orders.stream().map(Order::getOrderNo).collect(Collectors.joining(","));
         return "Draw a new number No:" + resultNumber
                 + "\norderNos:" + orderNos;
