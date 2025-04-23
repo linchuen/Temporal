@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @TableName("orders")
 public class Order {
     @TableId(type = IdType.AUTO)
-    private int id;
+    private Integer id;
     private String orderNo;
     private int round;
 

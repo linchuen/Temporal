@@ -1,4 +1,4 @@
-package com.cooba.example;
+package com.cooba.config;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.serviceclient.WorkflowServiceStubs;

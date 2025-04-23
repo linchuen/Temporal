@@ -29,8 +29,10 @@ public class GuessNumberActivityImpl implements GuessNumberActivity {
             walletService.subtract(order.getBetAmount());
         } catch (Exception e) {
             orderService.updateOrderStatus(order.getOrderNo(), Status.FAILED);
+            order.setStatus(Status.FAILED);
         }
         orderService.updateOrderStatus(order.getOrderNo(), Status.PENDING);
+        order.setStatus(Status.PENDING);
     }
 
     @Override
@@ -38,6 +40,7 @@ public class GuessNumberActivityImpl implements GuessNumberActivity {
         if (order.getStatus() == Status.PENDING) return;
 
         orderService.updateOrderStatus(order.getOrderNo(), Status.FAILED);
+        order.setStatus(Status.FAILED);
     }
 
     @Override
@@ -58,6 +61,7 @@ public class GuessNumberActivityImpl implements GuessNumberActivity {
             walletService.add(order.getWinAmount());
         }
         orderService.updateOrderStatus(order.getOrderNo(), Status.AWARD);
+        order.setStatus(Status.FAILED);
     }
 
     @Override
@@ -66,6 +70,7 @@ public class GuessNumberActivityImpl implements GuessNumberActivity {
             throw new RuntimeException("Status Error");
         }
         orderService.updateOrderStatus(order.getOrderNo(), Status.DONE);
+        order.setStatus(Status.DONE);
 
     }
 }
